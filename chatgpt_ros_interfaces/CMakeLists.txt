@@ -26,6 +26,8 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/Chat.action"
+  "srv/SetPrompt.srv"
+  "srv/AddExample.srv"
 )
 
 if(BUILD_TESTING)

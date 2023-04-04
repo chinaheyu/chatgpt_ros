@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>chatgpt_ros</name>
+  <name>chatgpt_ros_turtlesim</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="810130242@qq.com">hy</maintainer>
   <license>TODO: License declaration</license>
 
   <exec_depend>rclpy</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
   <exec_depend>chatgpt_ros_interfaces</exec_depend>
 
   <test_depend>ament_copyright</test_depend>

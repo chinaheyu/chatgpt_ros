@@ -1,11 +1,11 @@
 import datetime
-import math
 import openai
 import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 
 from chatgpt_ros_interfaces.action import Chat
+from chatgpt_ros_interfaces.srv import SetPrompt, AddExample
 from std_srvs.srv import Empty
 
 
@@ -32,6 +32,7 @@ class ChatBot:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=self.messages,
+            temperature=0,
             stream=True
         )
         # create variables to collect the stream of chunks
@@ -44,7 +45,6 @@ class ChatBot:
             collected_messages.append(chunk_message)  # save the message
             yield chunk_message.get('content', '')
 
-        # print the time delay and text received
         full_reply_role = ''.join([m.get('role', '') for m in collected_messages])
         full_reply_content = ''.join([m.get('content', '') for m in collected_messages])
         self.messages.append({"role": full_reply_role, "content": full_reply_content})
@@ -62,11 +62,12 @@ class ChatBot:
 
 
 class ChatActionServer(Node):
-
     def __init__(self):
         super().__init__('chat_action_server')
         self._action_server = ActionServer(self, Chat, 'chat', self.execute_callback)
         self._reset_service = self.create_service(Empty, 'reset', self.reset_callback)
+        self._set_prompt_service = self.create_service(SetPrompt, 'set_prompt', self.set_prompt_callback)
+        self._add_example_service = self.create_service(AddExample, 'add_example', self.add_example_callback)
         self._chatbot = ChatBot()
 
     def execute_callback(self, goal_handle):
@@ -87,6 +88,17 @@ class ChatActionServer(Node):
 
     def reset_callback(self, request, response):
         self._chatbot.reset()
+        return response
+
+    def set_prompt_callback(self, request, response):
+        self._chatbot.prompt = request.prompt
+        self._chatbot.reset()
+        self.get_logger().info(f'Chat prompt changed: {self._chatbot.prompt}')
+        return response
+
+    def add_example_callback(self, request, response):
+        self._chatbot.messages.append({"role": "user", "content": request.user})
+        self._chatbot.messages.append({"role": "assistant", "content": request.assistant})
         return response
 
 
