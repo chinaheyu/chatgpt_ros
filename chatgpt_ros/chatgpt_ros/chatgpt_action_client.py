@@ -8,7 +8,7 @@ from chatgpt_ros_interfaces.action import Chat
 class ChatActionClient(Node):
 
     def __init__(self):
-        super().__init__('chat_action_client')
+        super().__init__('chatgpt_action_client')
         self._action_client = ActionClient(self, Chat, 'chat')
 
     def send_goal(self, messages):
@@ -31,7 +31,7 @@ class ChatActionClient(Node):
 
     def get_result_callback(self, future):
         print()
-        self.send_goal(input())
+        self.send_goal(input("Input: "))
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
@@ -43,7 +43,7 @@ def main(args=None):
 
     action_client = ChatActionClient()
 
-    action_client.send_goal(input())
+    action_client.send_goal(input("Input: "))
 
     rclpy.spin(action_client)
 
